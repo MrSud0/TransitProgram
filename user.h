@@ -19,7 +19,7 @@ class personal_info{
 
 };
 
-class users {
+class user {
 private:
 public:
     personal_info( name, username, password, addr);
@@ -29,6 +29,10 @@ public:
     void transport_route(){}
     void transport_transfer(){}
 
+
+    //function that exits the program
+    //save current state to file
+    //load state from file
 };
 
 

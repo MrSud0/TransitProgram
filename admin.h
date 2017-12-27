@@ -6,7 +6,7 @@
 #define TRANSITPROGRAM_ADMIN_H
 
 
-class Admin {
+class admin {
 
 };
 
