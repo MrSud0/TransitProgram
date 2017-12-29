@@ -11,10 +11,10 @@ private:
     String plate_number,description;
     int seats,free_seats;
     user onwer,driver;
-    //if the trasport is a large/small bus it can go through plenty
+
     //vector<meeting_point> meeting_points or route bus_route
 
-    //a car or bike or motobike can only go to a meeting point if it has declared that it can ???
+    //a car or bike or motobike can only go to a meeting point if it declared that it can ???
     // private void check_availabity();
 public:
 

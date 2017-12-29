@@ -3,6 +3,7 @@
 //
 
 #include "std_lib_facilities.h"
+#include "meeting_point.cpp"
 
 //a class defining the address of a user
 class address{
@@ -210,6 +211,7 @@ public:
     //returns a list of all meeting points, along with any relevant information
     void view_meeting_points(){}
 
+    void view_users(){}
     //returns a list of all users
     //for passengers, prints: successful transfers,  summary of cost and average satisfaction
     //for driver, prints: same as passenger, transports that he drives/owns and average satisfaction of his clients
