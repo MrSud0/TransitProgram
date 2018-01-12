@@ -1,0 +1,683 @@
+/** 
+ *  This file tests the following events:
+ * 
+ *  1. user addition
+ *  ----------------
+ *  U <category> <username> <password> <full_name> <address> <phone_number>,
+ *  where 'U' stands for "User", 
+ *  <category> is one of: 
+ *  + 'A': administrator
+ *  + 'D': driver
+ *  + 'P': passenger
+ *  <full_name> contains (in this order): name, surname, and  
+ *  <address> contains (in this order): city, street, street number, postal code
+ *	
+ *  2. user login
+ *  ---------------------
+ *  L <username> <password>
+ *  
+ *  3. show list of users
+ *  ---------------------
+ *  S U
+ *  where 'S' stands for "Show" and 'U' for "Users"
+ *
+ *  4. add meeting points
+ *  ---------------------
+ *  M <description>
+ *
+ *  5. show meeting points
+ *  ----------------------
+ *  S M
+ *  
+ *  6. add vehicle category
+ *  -----------------------
+ *  V <vehicle_category>
+ *
+ *  7. define walking time
+ *  ----------------------
+ *  W <meeting_point_1> <meeting_point_2> <walking_time_in_minutes>
+ *  
+ *  8. show list of routes with no walking time assigned
+ *  ----------------------------------------------------
+ *  S W
+ *
+ *  9. user logout
+ *  --------------
+ *  O
+ *
+ *  10. add preferred vehicle category
+ *  ----------------------------------
+ *  P + <vehicle_category>
+ *
+ *  11. add non-preferred vehicle category
+ *  --------------------------------------
+ *  N + <vehicle_category>
+ *
+ *  12. show preferred vehicle categories
+ *  -------------------------------------
+ *  S P
+ *
+ *  13. show non-preferred vehicle categories
+ *  -----------------------------------------
+ *  S P
+ *
+ *  14. remove preferred vehicle category
+ *  -------------------------------------
+ *  P - <vehicle_category>
+ *
+ *  15. remove non-preferred vehicle categories
+ *  -----------------------------------------
+ *  N - <vehicle_category>
+ *
+ *  16. add preferred route
+ *  -----------------------
+ *  R <meeting_point_1> <meeting_point_2> <max_cost>, where
+ *  <max_cost> is one of the following:
+ *  + 0  --> free of charge 
+ *  + -1 --> indifferent
+ *  + a positive integer --> cost in €
+ *
+ *  17. show preferred routes
+ *  -------------------------
+ *  S R
+ *
+ *  18. add preferred moving
+ *  ------------------------
+ *  I <meeting_point_1> <meeting_point_2> <date> <max_cost>, where
+ *  <date> is an integer from the set [1..365] and
+ *  <max_cost> is one of the following:
+ *  + -2 --> no selection (the cost is the same with the correspoding route's cost)
+ *  + 0  --> free of charge 
+ *  + -1 --> indifferent
+ *  + a positive integer --> cost in €
+ *
+ *  19. show movings
+ *  ----------------
+ *  S S
+ *
+ *  20. vehicle purchase
+ *  --------------------
+ *  C <vehicle_id> <vehicle_category> <num_of_seats>
+ *
+ *  21. add moving service
+ *  ----------------------
+ *  E <meeting_point_1> <meeting_point_2> <date> <cost> <duration_in_minutes> <vehicle_id>, where
+ *  <date> is an integer in the range [1..365],
+ *  <max_cost> is one of the following:
+ *  + 0  --> free of charge 
+ *  + a positive integer --> cost in €
+ *  and <duration_in_minutes> is a positive integer
+ * 
+ *  22. search for passengers
+ *  -------------------------
+ *  G, where
+ *  this event shows any available passengers for each of the driver's moving services
+ *
+ *  23. notify passenger
+ *  --------------------
+ *  T <username> <meeting_point_1> <meeting_point_2> <date>, where
+ *  "<meeting_point_1> <meeting_point_2> <date>" is the moving
+ *
+ *  24. search for vehicle
+ *  ----------------------
+ *  H <meeting_point_1> <meeting_point_2> <date>
+ *  
+ *  25. buy ticket
+ *  --------------
+ *  B <meeting_point_1> <meeting_point_2> <date> <vehicle_id>
+ *
+ *  26. show ticket
+ *  ---------------
+ *  S T <meeting_point_1> <meeting_point_2> <date>
+ *
+ *  27. show passengers list for this moving
+ *  ----------------------------------------
+ *  S L <meeting_point_1> <meeting_point_2> <date>
+ *
+ *  28. show passengers list for each scheduled moving
+ *  --------------------------------------------------
+ *  S C
+ *
+ *  28. cancel ticket
+ *  -----------------
+ *  K <meeting_point_1> <meeting_point_2> <date>
+ *
+ *  29. increment date
+ *  ------------------
+ *  D <days>, where
+ *  <days> is a positive integer representing the days passed
+ *
+ *  30. rate and comment finished moving
+ *  ------------------------------------
+ *  F <meeting_point_1> <meeting_point_2> <date> <rate> <comments>, where
+ *  "<meeting_point_1> <meeting_point_2> <date>" is the moving and
+ *  <rate> is an integer in the range [0..100]
+ *
+ *  31. show passengers list for each completed moving
+ *  --------------------------------------------------
+ *  S E
+ *  
+ *  32. show drivers with bigger rate
+ *  ---------------------------------
+ *  S B <num>, where
+ *  <num> is a positive integer representing the number of drivers
+ *
+ *  33. show drivers with smaller rate
+ *  ----------------------------------
+ *  S V <num>, where
+ *  <num> is a positive integer representing the number of drivers
+ *
+ *  34. show more happy pasengers
+ *  -----------------------------
+ *  S H <num>, where
+ *  <num> is a positive integer representing the number of passengers
+ *  
+ *  35. show less happy pasengers
+ *  -----------------------------
+ *  S Y <num>, where
+ *  <num> is a positive integer representing the number of passengers
+ *
+ *  36. show all vehicles
+ *  ---------------------
+ *  S J
+ */
+
+// ========================
+// A. System Inizialization
+// ========================
+
+// A.1. add administrator
+// ----------------------
+U A ekosmas 12345 Elftherios Kosmas Hrakleio Knwsou 45 71320 6970122333
+
+
+// ==============================
+// B. Administrator's interaction
+// ==============================
+
+// B.1. login administrator
+// ------------------------
+L ekosmas 12345
+
+// B.2. add drivers
+// ----------------
+U D bike_company 12345 Xaris Podhlatas Hrakleio Kalokairinou 90 71400 6901010101
+U D taxi_driver 12345 Giwrgis Taxidiarakis Hrakleio TEI 1 71410 6911111111
+U D offensive_taxi_driver 12345 Alexandros Apotomos Hrakleio TEI 1 71810 6911111111
+U D bus_company 12345 Basilis Lewforiakis Hrakleio Giofyro 1 71680 6978787878
+U D car 12345 Manwlis Kalokardos Aerodromio 1 71230 6955555555
+
+// B.3. add passengers
+// -------------------
+U P student 12345 Maria Foititria Hrakleio Giofyro 45 71200 6912345678
+U P viastikos 12345 Kwstas Viastikakis Hrakleio Kalokairinou 10 71600 6970101010
+U P sveltos 12345 Nikos Sveltakis Hrakleio Chanioporta 1 71640 6999999999
+
+// B.4. list of users
+// ------------------
+S U
+
+// B.5. add meeting points
+// -----------------------
+M Chanioporta
+M Aerodromio
+M Plateia Eleftherias
+M Kalokairinou 10
+M Kalokairinou 100
+M Arxaiologikos Xwros Knwsou
+M Mouseio Fysikhs Istorias Krhths
+M Istoriko Mouseio Krhths
+M Giofyro
+M Kentrikh eisodos TEI
+M Gymnasthrio TEI
+
+// B.6. show meeting points
+// ------------------------
+S M
+
+// B.7. add vehicle category
+// -------------------------
+V bicycle
+V motorbike
+V car
+V taxi
+V small bus
+V big bus
+V walking
+
+// B.8. define walking time
+// ------------------------
+W Chanioporta Kalokairinou_10 5
+W Kalokairinou_10 Kalokairinou_100 10
+W Plateia_Eleftherias Kalokairinou_100 10
+W Giofyro Chanioporta 25
+W Giofyro Kentrikh_eisodos_TEI 25
+W Giofyro Plateia_Eleftherias 35
+W Kentrikh_eisodos_TEI Gymnasthrio_TEI 5
+
+// B.9. show list of routes with no walking time assigned
+// ------------------------------------------------------
+// note 1: e.g. a route without walking time assigned is: "Istoriko Mouseio Krhths" <--> "Aerodromio"
+// note 2: e.g. a route with walking time assigned is: "Chanioporta" <--> "Kalokairinou 100" 
+//         with walking time 15 minutes, since walking time from "Chanioporta" to "Kalokairinou 10" is 5 minutes
+//         and walking time from "Kalokairinou 10" to "Kalokairinou 100" is 10 minutes 
+S W
+
+// B.10. logout administrator
+----------------------------
+O
+
+
+// ==========================
+// C. Passenger's interaction
+// ==========================
+
+// C.1. login passenger
+// --------------------
+L student 12345
+
+// C.2. add preferred vehicle category
+// -----------------------------------
+P + small bus
+P + big bus
+P + car
+
+// C.3. add non-preferred vehicle category
+// ---------------------------------------
+N + bicycle
+N + motorbike
+N + taxi
+
+// C.4. show preferred vehicle category
+// ------------------------------------
+S P
+
+// C.5. show non-preferred vehicle category
+// ----------------------------------------
+S N
+
+// C.6. remove non-preferred vehicle category
+// ------------------------------------------
+N - bicycle
+
+// C.7. show non-preferred vehicle category
+// ----------------------------------------
+S N
+
+// C.8. logout passenger
+------------------------
+O
+
+// C.9. similar actions for the remaining passengers
+// -------------------------------------------------
+L viastikos 12345
+P + car
+P + taxi
+P + motorbike
+N + bicycle
+N + walking
+N + small bus
+N + big bus
+S P
+S N
+O
+
+L sveltos 12345
+P + bicycle
+P + motorbike
+P + walking
+P + small bus
+P + big bus
+N + taxi
+N + car
+S P
+S N
+O
+
+// C.10. login passenger
+// ---------------------
+L student 12345
+
+// C.11. add preferred route
+----------------------------
+R Giofyro Kentrikh_eisodos_TEI 2
+R Kentrikh_eisodos_TEI Giofyro 2
+R Giofyro Plateia_Eleftherias 0
+R Plateia_Eleftherias Giofyro 0
+
+// C.12. show preferred routes
+------------------------------
+S R
+
+// C.13. add preferred moving
+-----------------------------
+I Giofyro Kentrikh_eisodos_TEI 1 -2
+I Kentrikh_eisodos_TEI Giofyro 2 -2
+I Giofyro Kentrikh_eisodos_TEI 3 -2
+I Kentrikh_eisodos_TEI Giofyro 4 -2
+I Giofyro Kentrikh_eisodos_TEI 5 -2
+I Giofyro Plateia_Eleftherias 6 1
+I Plateia_Eleftherias Giofyro 7 -2
+
+// C.14. show movings
+---------------------
+S S
+
+// C.15. logout passenger
+-------------------------
+O
+
+// C.16. similar actions for the remaining passengers
+// --------------------------------------------------
+L viastikos 12345
+
+R Kalokairinoy_10 Aerodromio -1
+R Aerodromio Kalokairinoy_10 -1
+R Kalokairinoy_10 Arxaiologikos_Xwros_Knwsou -1
+R Arxaiologikos_Xwros_Knwsou Kalokairinoy_10 -1
+S R
+
+I Kalokairinoy_10 Aerodromio 1 -2
+I Aerodromio Kalokairinoy_10 3 -2
+I Kalokairinoy_10 Aerodromio 4 -2
+I Aerodromio Kalokairinoy_10 6 -2
+I Kalokairinoy_10 Arxaiologikos_Xwros_Knwsou 7 -2
+I Arxaiologikos_Xwros_Knwsou Kalokairinoy_10 8 -2
+S S
+
+O
+
+L sveltos 12345
+
+R Chanioporta Mouseio_Fysikhs_Istorias_Krhths 0
+R Mouseio_Fysikhs_Istorias_Krhths Chanioporta 0
+R Chanioporta Gymnasthrio_TEI 0
+R Gymnasthrio_TEI Chanioporta 0
+S R
+
+I Chanioporta Mouseio_Fysikhs_Istorias_Krhths 1 -2
+I Mouseio_Fysikhs_Istorias_Krhths Chanioporta 2 -2
+I Chanioporta Gymnasthrio_TEI 3 -2
+I Gymnasthrio_TEI Chanioporta 4 -2
+S S
+
+O
+
+
+// ========================
+// D. Drivers's interaction
+// ========================
+
+// D.1. login driver
+// -----------------
+L bus_company 12345
+
+// D.2. vehicle purchase
+// ---------------------
+C SBUS-1 small_bus 15
+C BBUS-2 big_bus 40
+
+// D.3. add moving service
+// -----------------------
+E Giofyro Kentrikh_eisodos_TEI 1 2 10 BBUS-1
+E Kentrikh_eisodos_TEI Giofyro 2 2 10 BBUS-1
+E Giofyro Kentrikh_eisodos_TEI 3 2 10 BBUS-1
+E Kentrikh_eisodos_TEI Giofyro 4 2 10 BBUS-1
+E Giofyro Kentrikh_eisodos_TEI 5 2 10 BBUS-1
+
+// D.4. search for passengers
+// --------------------------
+G
+
+// D.5. notify passenger
+// ---------------------
+T student Giofyro Kentrikh_eisodos_TEI 1
+T student Giofyro Kentrikh_eisodos_TEI 3
+T student Giofyro Kentrikh_eisodos_TEI 5
+T student Kentrikh_eisodos_TEI Giofyro 2
+T student Kentrikh_eisodos_TEI Giofyro 4
+
+// D.6. logout driver
+---------------------
+O
+
+// D.7. similar actions for other drivers
+// --------------------------------------
+L car 12345
+
+C CAR-1 car 4
+C MBK-1 motor_bike 1
+
+E Giofyro Kentrikh_eisodos_TEI 1 0 5 CAR-1
+E Giofyro Kentrikh_eisodos_TEI 3 2 4 MBK-1
+E Giofyro Kentrikh_eisodos_TEI 5 3 5 CAR-1
+E Giofyro Plateia_Eleftherias 6 2 5 MBK-1
+
+
+T student Giofyro Kentrikh_eisodos_TEI 1
+T student Giofyro Kentrikh_eisodos_TEI 3
+T student Giofyro Kentrikh_eisodos_TEI 5
+T student Giofyro Plateia_Eleftherias 6
+
+O
+
+
+// ==========================
+// E. Passenger's interaction
+// ==========================
+
+// E.1. login passenger
+// --------------------
+// note: here passenger should be notified for available movings from bus_company
+L student 12345
+
+// E.2. search for vehicle
+// -----------------------
+H Giofyro Kentrikh_eisodos_TEI 1
+H Giofyro Kentrikh_eisodos_TEI 3
+H Giofyro Kentrikh_eisodos_TEI 5
+// note: the following search should return MBK-1 with a correponding notification of a non-preferred vehicle
+H Giofyro Plateia_Eleftherias 6
+
+// E.3. buy ticket
+// ---------------
+B Giofyro Kentrikh_eisodos_TEI 1 BBUS-1
+B Giofyro Kentrikh_eisodos_TEI 3 BBUS-1
+B Giofyro Kentrikh_eisodos_TEI 5 BBUS-1
+B Giofyro Plateia_Eleftherias 6 MBK-1
+
+// E.4. show ticket
+// ---------------
+
+S T Giofyro Kentrikh_eisodos_TEI 1
+S T Giofyro Plateia_Eleftherias 6
+
+// E.4. search for vehicle
+// -----------------------
+// note: this search should not return MBK-1 since the (just one) seat of this vehicle is occupied
+H Giofyro Plateia_Eleftherias 6
+
+// E.5. show movings
+---------------------
+S S
+
+// E.6. logout passenger
+------------------------
+O
+
+// E.7. similar actions for other passengers
+// -----------------------------------------
+L sveltos 12345
+B Giofyro Kentrikh_eisodos_TEI 1 BBUS-1
+B Giofyro Kentrikh_eisodos_TEI 3 BBUS-1
+B Giofyro Kentrikh_eisodos_TEI 5 BBUS-1
+S T Giofyro Kentrikh_eisodos_TEI 1
+S S
+O
+
+
+// =======================
+// F. Drivers' interaction
+// =======================
+
+// F.1. login driver
+// -----------------
+// note: here driver should be notified for new tickets bought by student and sveltos
+L bus_company 12345
+
+// F.2. show passengers list for this moving
+// -----------------------------------------
+S L Giofyro Kentrikh_eisodos_TEI 1
+
+// F.3. show passengers list for each scheduled moving
+// ---------------------------------------------------
+S C
+
+// F.4. logout driver
+---------------------
+O
+
+// F.5. similar actions for other drivers
+// --------------------------------------
+// note: here driver should be notified for new tickets bought by student
+L car 12345
+S C
+O
+
+// ==========================
+// G. Passenger's interaction
+// ==========================
+
+// G.1. login passenger
+// --------------------
+L student 12345
+
+// G.2. show movings
+---------------------
+S S
+
+// G.3. cancel ticket
+---------------------
+K Giofyro Kentrikh_eisodos_TEI 5
+
+// G.4. show movings
+---------------------
+S S
+
+// G.5. logout passenger
+------------------------
+O
+
+
+// =======================
+// H. Drivers' interaction
+// =======================
+
+// H.1. login driver
+// -----------------
+// note: here driver should be notified for ticket cancelled by student
+L bus_company 12345
+
+// H.2. show passengers list for each scheduled moving
+// ---------------------------------------------------
+S C
+
+// H.3. logout driver
+---------------------
+O
+
+
+// ==============================
+// I. Administrator's interaction
+// ==============================
+
+// I.1. login administrator
+// ------------------------
+L ekosmas 12345
+
+// I.2. increment date
+// -------------------
+// note: the date becomes the 6th day
+D 5
+
+// I.3. logout administrator
+----------------------------
+O
+
+
+// ==========================
+// J. Passenger's interaction
+// ==========================
+
+// J.1. login passenger
+// --------------------
+L student 12345
+
+// J.2. show movings
+---------------------
+S S
+
+// J.3. rate and comment finished moving
+// -------------------------------------
+F Giofyro Kentrikh_eisodos_TEI 1 60 Eyxaristh diadromh, alla me poly kosmo :(
+F Giofyro Kentrikh_eisodos_TEI 3 100 Teleia diadromh! :)
+
+// J.4. logout passenger
+------------------------
+O
+
+// J.5. similar actions for other passengers
+// -----------------------------------------
+L sveltos 12345
+F Giofyro Kentrikh_eisodos_TEI 1 75 To lewforeio tha eprepe na exei ligotero kosmo!
+F Giofyro Kentrikh_eisodos_TEI 3 100 Ola wraia! :)
+O
+
+// =======================
+// K. Drivers' interaction
+// =======================
+
+// K.1. login driver
+// -----------------
+L bus_company 12345
+
+// K.2. show passengers list for each scheduled moving
+// ---------------------------------------------------
+S C
+
+// K.3. show passengers list for each completed moving
+// ---------------------------------------------------
+S E
+
+// K.4. logout driver
+---------------------
+O
+
+
+// ==============================
+// L. Administrator's interaction
+// ==============================
+
+// L.1. login administrator
+// ------------------------
+L ekosmas 12345
+
+// L.2 show drivers with bigger rate
+// ---------------------------------
+S B 10
+
+// L.3 show drivers with smaller rate
+// ----------------------------------
+S V 10
+
+// L.4 show more happy pasengers
+// -----------------------------
+S H 10
+
+// L.5 show less happy pasengers
+// -----------------------------
+S Y 10
+
+// L.6 show all vehicles
+// ---------------------
+S J

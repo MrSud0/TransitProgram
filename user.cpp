@@ -16,12 +16,16 @@ public:
     address(){};
     address(String street, int nmbr, int tk);
 
+   address set_address(String str,int nmbr,int tk){
+      return address(str, nmbr, tk);
+
+   };
 };
 //a class defining the personal info of a user
-class personal_info {
+class personal_info :: a{
 private:
     String name,surname;
-    address(street,nmbr,tk);
+    address addr.set_address( str, nmbr, tk);
 public:
     //TODO GETTERS+SETTERS if needed
     personal_info(){};
@@ -41,7 +45,8 @@ private:
 
 //class defining a passenger and his functions
 class passenger::user{
-public:
+private:
+
 public:
     //TODO GETTERS+SETTERS if needed
 

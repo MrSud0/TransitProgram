@@ -1,0 +1,55 @@
+/** 
+ *  This file tests the following events:
+ *
+ *  1. user addition
+ *  ----------------
+ *  U <category> <username> <password> <full_name> <address> <phone_number>,
+ *  where 'U' stands for "User", 
+ *  <category> is one of: 
+ *	+ 'A': administrator
+ *  + 'D': driver
+ *  + 'P': passenger
+ *  <full_name> contains (in this order): name, surname, and  
+ *  <address> contains (in this order): city, street, street number, postal code
+ *	
+ *  2. user login
+ *  ---------------------
+ *  L <username> <password>
+ *  
+ *  3. show list of users
+ *  ---------------------
+ *  S U
+ *  where 'S' stands for "Show" and 'U' for "Users"
+ */
+
+// ========================
+// A. System Inizialization
+// ========================
+
+// A.1. add administrator
+// ----------------------
+U A ekosmas 12345 Elftherios Kosmas Hrakleio Knwsou 45 71320 6970122333
+
+// ==============================
+// B. Administrator's interaction
+// ==============================
+
+// B.1. login administrator
+// ------------------------
+L ekosmas 12345
+
+// B.2. add drivers
+// ----------------
+U D bike_company 12345 Xaris Podhlatas Hrakleio Kalokairinou 90 71400 6901010101
+U D taxi_driver 12345 Giwrgos Taxidiarakis Hrakleio TEI 1 71410 6911111111
+U D offensive_taxi_driver 12345 Alexandros Apotomos Hrakleio TEI 1 71810 6911111111
+
+// B.3. add passengers
+// -------------------
+U P student 12345 Maria Foititria Hrakleio Giofyro 45 71200 6912345678
+U P viastikos 12345 Kwstas Viastikakis Hrakleio Dhmokratias 130 71600 6970101010
+U P sveltos 12345 Nikos Sveltakis Hrakleio Chanioporta 134 71640 6999999999
+
+// B.4. list of users
+// ------------------
+S U

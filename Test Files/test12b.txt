@@ -1,0 +1,407 @@
+/** 
+ *  This file tests the following events:
+ * 
+ *  1. user addition
+ *  ----------------
+ *  U <category> <username> <password> <full_name> <address> <phone_number>,
+ *  where 'U' stands for "User", 
+ *  <category> is one of: 
+ *  + 'A': administrator
+ *  + 'D': driver
+ *  + 'P': passenger
+ *  <full_name> contains (in this order): name, surname, and  
+ *  <address> contains (in this order): city, street, street number, postal code
+ *	
+ *  2. user login
+ *  ---------------------
+ *  L <username> <password>
+ *  
+ *  3. show list of users
+ *  ---------------------
+ *  S U
+ *  where 'S' stands for "Show" and 'U' for "Users"
+ *
+ *  4. add meeting points
+ *  ---------------------
+ *  M <description>
+ *
+ *  5. show meeting points
+ *  ----------------------
+ *  S M
+ *  
+ *  6. add vehicle category
+ *  -----------------------
+ *  V <vehicle_category>
+ *
+ *  7. define walking time
+ *  ----------------------
+ *  W <meeting_point_1> <meeting_point_2> <walking_time_in_minutes>
+ *  
+ *  8. show list of routes with no walking time assigned
+ *  ----------------------------------------------------
+ *  S W
+ *
+ *  9. user logout
+ *  --------------
+ *  O
+ *
+ *  10. add preferred vehicle category
+ *  ----------------------------------
+ *  P + <vehicle_category>
+ *
+ *  11. add non-preferred vehicle category
+ *  --------------------------------------
+ *  N + <vehicle_category>
+ *
+ *  12. show preferred vehicle categories
+ *  -------------------------------------
+ *  S P
+ *
+ *  13. show non-preferred vehicle categories
+ *  -----------------------------------------
+ *  S P
+ *
+ *  14. remove preferred vehicle category
+ *  -------------------------------------
+ *  P - <vehicle_category>
+ *
+ *  15. remove non-preferred vehicle categories
+ *  -----------------------------------------
+ *  N - <vehicle_category>
+ *
+ *  16. add preferred route
+ *  -----------------------
+ *  R <meeting_point_1> <meeting_point_2> <max_cost>, where
+ *  <max_cost> is one of the following:
+ *  + 0  --> free of charge 
+ *  + -1 --> indifferent
+ *  + a positive integer --> cost in €
+ *
+ *  17. show preferred routes
+ *  -------------------------
+ *  S R
+ *
+ *  18. add preferred moving
+ *  ------------------------
+ *  I <meeting_point_1> <meeting_point_2> <date> <max_cost>, where
+ *  <date> is an integer from the set [1..365] and
+ *  <max_cost> is one of the following:
+ *  + -2 --> no selection (the cost is the same with the correspoding route's cost)
+ *  + 0  --> free of charge 
+ *  + -1 --> indifferent
+ *  + a positive integer --> cost in €
+ *
+ *  19. show movings
+ *  ----------------
+ *  S S
+ *
+ *  20. vehicle purchase
+ *  --------------------
+ *  C <vehicle_id> <vehicle_category> <num_of_seats>
+ *
+ *  21. add moving service
+ *  ----------------------
+ *  E <meeting_point_1> <meeting_point_2> <date> <cost> <duration_in_minutes> <vehicle_id>, where
+ *  <date> is an integer in the range [1..365],
+ *  <max_cost> is one of the following:
+ *  + 0  --> free of charge 
+ *  + a positive integer --> cost in €
+ *  and <duration_in_minutes> is a positive integer
+ * 
+ *  22. search for passengers
+ *  -------------------------
+ *  G, where
+ *  this event shows any available passengers for each of the driver's moving services
+ *
+ *  23. notify passenger
+ *  --------------------
+ *  T <username> <meeting_point_1> <meeting_point_2> <date>, where
+ *  "<meeting_point_1> <meeting_point_2> <date>" is the moving
+ *
+ *  24. search for vehicle
+ *  ----------------------
+ *  H <meeting_point_1> <meeting_point_2> <date>
+ *  
+ *  25. buy ticket
+ *  --------------
+ *  B <meeting_point_1> <meeting_point_2> <date> <vehicle_id>
+ *
+ *  26. show ticket
+ *  ---------------
+ *  S T <meeting_point_1> <meeting_point_2> <date>
+ *
+ *  27. show passengers list for this moving
+ *  ----------------------------------------
+ *  S L <meeting_point_1> <meeting_point_2> <date>
+ *
+ *  28. show passengers list for each scheduled moving
+ *  --------------------------------------------------
+ *  S C
+ *
+ *  28. cancel ticket
+ *  -----------------
+ *  K <meeting_point_1> <meeting_point_2> <date>
+ *
+ *  29. increment date
+ *  ------------------
+ *  D <days>, where
+ *  <days> is a positive integer representing the days passed
+ *
+ *  30. rate and comment finished moving
+ *  ------------------------------------
+ *  R <meeting_point_1> <meeting_point_2> <date> <rate> <comments>, where
+ *  "<meeting_point_1> <meeting_point_2> <date>" is the moving and
+ *  <rate> is an integer in the range [0..100]
+ *
+ *  31. show passengers list for each completed moving
+ *  --------------------------------------------------
+ *  S E
+ *  
+ *  32. show drivers with bigger rate
+ *  ---------------------------------
+ *  S B <num>, where
+ *  <num> is a positive integer representing the number of drivers
+ *
+ *  33. show drivers with smaller rate
+ *  ----------------------------------
+ *  S V <num>, where
+ *  <num> is a positive integer representing the number of drivers
+ *
+ *  34. show more happy pasengers
+ *  -----------------------------
+ *  S H <num>, where
+ *  <num> is a positive integer representing the number of passengers
+ *  
+ *  35. show less happy pasengers
+ *  -----------------------------
+ *  S Y <num>, where
+ *  <num> is a positive integer representing the number of passengers
+ *
+ *  36. show all vehicles
+ *  ---------------------
+ *  S J
+ *
+ *  37. change user category
+ *  ------------------------
+ *  Y <username> <new_category>, where
+ *  <new_category> is one of: 
+ *	+ 'A': administrator
+ *  + 'D': driver
+ *  + 'P': passenger
+ *
+ *  38. group meeting points
+ *  ------------------------
+ *  Q <meeting_point_1> <meeting_point_2>, where
+ *  <meeting_point_2> is the name of the meeting point replaced by the name <meeting_point_1>;
+ *  i.e. after this command takes place, <meeting_point_2> has been replaced by <meeting_point_1>
+ *  in the state of the system.
+ *
+ *  39. program shutdown
+ *  --------------------
+ *  Z
+ */
+
+// ========================
+// D. Drivers's interaction
+// ========================
+
+// D.1. login driver
+// -----------------
+L bus_company 12345
+
+// D.2. vehicle purchase
+// ---------------------
+C SBUS-1 small_bus 15
+C BBUS-2 big_bus 40
+
+// D.3. add moving service
+// -----------------------
+E Giofyro Kentrikh_eisodos_TEI 1 2 10 BBUS-1
+E Kentrikh_eisodos_TEI Giofyro 2 2 10 BBUS-1
+E Giofyro Kentrikh_eisodos_TEI 3 2 10 BBUS-1
+E Kentrikh_eisodos_TEI Giofyro 4 2 10 BBUS-1
+E Giofyro Kentrikh_eisodos_TEI 5 2 10 BBUS-1
+
+// D.4. search for passengers
+// --------------------------
+G
+
+// D.5. notify passenger
+// ---------------------
+T student Giofyro Kentrikh_eisodos_TEI 1
+T student Giofyro Kentrikh_eisodos_TEI 3
+T student Giofyro Kentrikh_eisodos_TEI 5
+T student Kentrikh_eisodos_TEI Giofyro 2
+T student Kentrikh_eisodos_TEI Giofyro 4
+
+// D.6. logout driver
+---------------------
+O
+
+// D.7. similar actions for other drivers
+// --------------------------------------
+L car 12345
+
+C CAR-1 car 4
+C MBK-1 motor_bike 1
+
+E Giofyro Kentrikh_eisodos_TEI 1 0 5 CAR-1
+E Giofyro Kentrikh_eisodos_TEI 3 2 4 MBK-1
+E Giofyro Kentrikh_eisodos_TEI 5 3 5 CAR-1
+E Giofyro Plateia_Eleftherias 6 2 5 MBK-1
+
+T student Giofyro Kentrikh_eisodos_TEI 1
+T student Giofyro Kentrikh_eisodos_TEI 3
+T student Giofyro Kentrikh_eisodos_TEI 5
+T student Giofyro Plateia_Eleftherias 6
+
+
+
+E Kalokairinou_10 Plateia_Eleftherias 4 1 5 CAR-1
+
+O 
+
+L taxi_driver 12345
+
+C TAX-1 taxi 4
+
+E Kalokairinou_10 Plateia_Eleftherias 1 1 5 TAX-1
+E Plateia_Eleftherias Aerodromio 1 2 15 TAX-1
+E Plateia_Eleftherias Aerodromio 4 2 10 TAX-1
+
+O
+
+L offensive_driver 12345
+
+C CAR-2 car 4
+
+E Chanioporta Giofyro 1 0 5 CAR-2
+E Giofyro Chanioporta 2 0 5 CAR-2
+E Kalokairinoy_10 Arxaiologikos_Xwros_Knwsou 7 5 15 CAR-2
+E Arxaiologikos_Xwros_Knwsou Kalokairinoy_10 8 5 15 CAR-2
+
+O
+
+L bike_company 12345
+
+C BK-1 bicycle 1
+
+E Kentrikh_eisodos_TEI Mouseio_Fysikhs_Istorias_Krhths 1 0 15 BK-1
+
+O
+
+
+// ==========================
+// E. Passenger's interaction
+// ==========================
+
+// E.1. login passenger
+// --------------------
+// note: here passenger should be notified for available movings from bus_company
+L student 12345
+
+// E.2. search for vehicle
+// -----------------------
+H Giofyro Kentrikh_eisodos_TEI 1
+H Giofyro Kentrikh_eisodos_TEI 3
+H Giofyro Kentrikh_eisodos_TEI 5
+// note: the following search should return MBK-1 with a correponding notification of a non-preferred vehicle
+H Giofyro Plateia_Eleftherias 6
+
+// E.3. buy ticket
+// ---------------
+B Giofyro Kentrikh_eisodos_TEI 1 BBUS-1
+B Giofyro Kentrikh_eisodos_TEI 3 BBUS-1
+B Giofyro Kentrikh_eisodos_TEI 5 BBUS-1
+B Giofyro Plateia_Eleftherias 6 MBK-1
+
+// E.4. show ticket
+// ---------------
+
+S T Giofyro Kentrikh_eisodos_TEI 1
+S T Giofyro Plateia_Eleftherias 6
+
+// E.4. search for vehicle
+// -----------------------
+// note: this search should not return MBK-1 since the (just one) seat of this vehicle is occupied
+H Giofyro Plateia_Eleftherias 6
+
+// E.5. show movings
+---------------------
+S S
+
+// E.6. logout passenger
+------------------------
+O
+
+// E.7. similar actions for other passengers
+// -----------------------------------------
+L sveltos 12345
+B Giofyro Kentrikh_eisodos_TEI 1 BBUS-1
+B Giofyro Kentrikh_eisodos_TEI 3 BBUS-1
+B Giofyro Kentrikh_eisodos_TEI 5 BBUS-1
+H Chanioporta Mouseio_Fysikhs_Istorias_Krhths 1
+B Chanioporta Giofyro 1 CAR-2
+B Kentrikh_eisodos_TEI Mouseio_Fysikhs_Istorias_Krhths 1 BK-1
+S T Giofyro Kentrikh_eisodos_TEI 1
+
+S S
+O
+
+L viastikos 12345
+H Kalokairinoy_10 Aerodromio 1
+H Kalokairinoy_10 Aerodromio 4
+B Kalokairinoy_10 Plateia_Eleftherias 1 TAX-1
+B Plateia_Eleftherias Aerodromio 1 TAX-1
+B Kalokairinoy_10 Plateia_Eleftherias 4 CAR-1
+B Plateia_Eleftherias Aerodromio 4 TAX-1
+B Kalokairinoy_10 Arxaiologikos_Xwros_Knwsou 7 CAR-2
+B Arxaiologikos_Xwros_Knwsou Kalokairinoy_10 8 CAR-2
+S S
+O
+
+// =======================
+// F. Drivers' interaction
+// =======================
+
+// F.1. login driver
+// -----------------
+// note: here driver should be notified for new tickets bought by student and sveltos
+L bus_company 12345
+
+// F.2. show passengers list for this moving
+// -----------------------------------------
+S L Giofyro Kentrikh_eisodos_TEI 1
+
+// F.3. show passengers list for each scheduled moving
+// ---------------------------------------------------
+S C
+
+// F.4. logout driver
+---------------------
+O
+
+// F.5. similar actions for other drivers
+// --------------------------------------
+// note: here driver should be notified for new tickets bought by student and viastikos
+L car 12345
+S C
+O
+
+// note: here driver should be notified for new tickets bought by viastikos
+L taxi_driver 12345
+S C
+O
+
+// note: here driver should be notified for new tickets bought by sveltos and viastikos
+L offensive_driver 12345
+S C
+O
+
+// note: here driver should be notified for new tickets bought by sveltos
+L bike_company 12345
+S C
+
+// F.6. program shutdown
+// ----------------------
+Z
